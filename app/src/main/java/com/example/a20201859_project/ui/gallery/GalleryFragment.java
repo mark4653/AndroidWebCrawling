@@ -1,18 +1,17 @@
 package com.example.a20201859_project.ui.gallery;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -41,7 +40,6 @@ public class GalleryFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         GalleryViewModel galleryViewModel =
                 new ViewModelProvider(this).get(GalleryViewModel.class);
-
         binding = FragmentGalleryBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         FloatingActionButton Crawling = binding.startCrawling;
@@ -50,6 +48,22 @@ public class GalleryFragment extends Fragment {
         webView.setWebViewClient(new WebViewClient());
         webView.getSettings().setJavaScriptEnabled(true);
         webView.loadUrl("https://quasarzone.com/bbs/qb_saleinfo");
+        webView.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    WebView webView = (WebView) v;
+                    if (keyCode == KeyEvent.KEYCODE_BACK) {
+                        if (webView.canGoBack()) {
+                            webView.goBack();
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+        });
+
         myHelper = new myDBHelper(getActivity());
 
 
@@ -64,6 +78,7 @@ public class GalleryFragment extends Fragment {
                 //유효한 URL이면 크롤링 실행
                 if(PageUrl.matches(ValiedUrl)) {
                     makeThread(PageUrl);
+                    Toast.makeText(getContext(),"추가되었습니다", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getContext(),"URL이 유효하지 않습니다", Toast.LENGTH_SHORT).show();
                 }
@@ -81,6 +96,7 @@ public class GalleryFragment extends Fragment {
         binding = null;
     }
 
+
     //크롤링 처리 스레드
     public void makeThread(String PageUrl) {
         new Thread() {
@@ -90,7 +106,6 @@ public class GalleryFragment extends Fragment {
                 Document doc = null;
                 try {
                     doc = Jsoup.connect(PageUrl).get(); //Jsoup 라이브러리 사용
-                    //Toast.makeText(getContext(),url, Toast.LENGTH_SHORT).show();
 
                     //특가 진행 상태와 제품 이름 가져오기
                     Elements crawledDetail = doc.select("div.common-view-area h1.title");

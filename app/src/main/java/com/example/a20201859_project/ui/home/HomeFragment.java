@@ -51,8 +51,9 @@ public class HomeFragment extends Fragment {
         mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
 
-        //새로고침 버튼 설정
+        //새로고침, 초기화 버튼 설정
         Button btnRefresh = binding.btnrefresh;
+        Button btnInit = binding.btninit;
 
         //현재 데이터를 갱신하여 특가가 종료되었는지 확인 후 종료되었다면 삭제
         btnRefresh.setOnClickListener(new View.OnClickListener() {
@@ -75,9 +76,19 @@ public class HomeFragment extends Fragment {
                 loadData(); //작업이 완료되었으면 리스트 갱신
             }
         });
-        loadData();
 
-        Toast.makeText(getContext(),"준비완료", Toast.LENGTH_SHORT).show();
+        //DB에 있는 리스트를 전부 초기화
+        btnInit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                db_remove = myHelper.getWritableDatabase();
+                myHelper.onUpgrade(db_remove, 1, 2);
+                db_remove.close();
+                loadData();
+            }
+        });
+
+        loadData();
 
         return root;
     }
