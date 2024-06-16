@@ -48,6 +48,7 @@ public class GalleryFragment extends Fragment {
         webView.setWebViewClient(new WebViewClient());
         webView.getSettings().setJavaScriptEnabled(true);
         webView.loadUrl("https://quasarzone.com/bbs/qb_saleinfo");
+        //웹뷰에서 이전 페이지 기록이 있으면 뒤로가기 키로 이전 페이지로 이동
         webView.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
