@@ -100,16 +100,10 @@ public class GalleryFragment extends Fragment {
                     Element crawledUrl = doc.selectFirst("table.market-info-view-table");
                     String url = crawledUrl.select("tbody tr").select("td").get(0).text();
 
+                    Log.d("mark4653", "크롤링 완료");
+
                     SQLInsert(status, name, url);
 
-
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            //Toast.makeText(getContext(),temp.text(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    //Log.d("test", String.valueOf(contents.get(0).text()));
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -120,11 +114,11 @@ public class GalleryFragment extends Fragment {
 
     public void SQLInsert(String status, String name, String url) {
         sqlDB = myHelper.getWritableDatabase();
-        String sql = "INSERT INTO groupDB (Status, Name, Url) VALUES ('" + status + "', '" + name + "', '" + url + "');";
+        sqlDB.execSQL("INSERT INTO groupTBL (Status, Name, Url) VALUES ('" + status + "', '" + name + "', '" + url + "');");
         sqlDB.close();
     }
 
-    public class myDBHelper extends SQLiteOpenHelper {
+    public static class myDBHelper extends SQLiteOpenHelper {
         public myDBHelper(Context context) {
             super(context, "groupDB", null, 1);
         }

@@ -1,0 +1,25 @@
+package com.example.a20201859_project;
+
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
+
+public class MyViewHolder extends RecyclerView.ViewHolder {
+
+    TextView status, name;
+    Button loadurl;
+
+    public MyViewHolder(View itemView) {
+        super(itemView);
+
+        status = (TextView) itemView.findViewById(R.id.status);
+        name = (TextView) itemView.findViewById(R.id.name);
+        loadurl = (Button) itemView.findViewById(R.id.loadurl);
+
+
+    }
+
+}
