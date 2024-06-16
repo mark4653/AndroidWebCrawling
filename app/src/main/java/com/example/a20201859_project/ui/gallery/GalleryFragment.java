@@ -32,7 +32,7 @@ import java.io.IOException;
 public class GalleryFragment extends Fragment {
     SQLiteDatabase sqlDB;
     myDBHelper myHelper;
-
+    String ValiedUrl = "https://quasarzone.com/bbs/qb_saleinfo/views/\\d+";
 
     private FragmentGalleryBinding binding;
 
@@ -59,18 +59,19 @@ public class GalleryFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //Toast.makeText(getContext(),"성공1", Toast.LENGTH_SHORT).show();
+                String PageUrl = webView.getUrl();
 
-                makeThread(webView.getUrl(), sqlDB, myHelper);
+                //유효한 URL이면 크롤링 실행
+                if(PageUrl.matches(ValiedUrl)) {
+                    makeThread(PageUrl);
+                } else {
+                    Toast.makeText(getContext(),"URL이 유효하지 않습니다", Toast.LENGTH_SHORT).show();
+                }
 
-                //Toast.makeText(getContext(),URL, Toast.LENGTH_SHORT).show();
+
             }
         });
 
-
-        
-
-        //final TextView textView = binding.textGallery;
-        //galleryViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
 
@@ -81,14 +82,14 @@ public class GalleryFragment extends Fragment {
     }
 
     //크롤링 처리 스레드
-    void makeThread(String PageUrl, SQLiteDatabase sqlDB, myDBHelper myHelper) {
+    public void makeThread(String PageUrl) {
         new Thread() {
             @Override
             public void run() {
 
                 Document doc = null;
                 try {
-                    doc = Jsoup.connect(PageUrl).get();
+                    doc = Jsoup.connect(PageUrl).get(); //Jsoup 라이브러리 사용
                     //Toast.makeText(getContext(),url, Toast.LENGTH_SHORT).show();
 
                     //특가 진행 상태와 제품 이름 가져오기
@@ -100,11 +101,7 @@ public class GalleryFragment extends Fragment {
                     Element crawledUrl = doc.selectFirst("table.market-info-view-table");
                     String url = crawledUrl.select("tbody tr").select("td").get(0).text();
 
-                    Log.d("mark4653", "크롤링 완료");
-
-                    SQLInsert(status, name, url);
-
-
+                    SQLInsert(status, name, url, PageUrl); //DB에 삽입
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -112,9 +109,10 @@ public class GalleryFragment extends Fragment {
         }.start();
     }
 
-    public void SQLInsert(String status, String name, String url) {
+    //DB 삽입 함수
+    public void SQLInsert(String status, String name, String url, String purl) {
         sqlDB = myHelper.getWritableDatabase();
-        sqlDB.execSQL("INSERT INTO groupTBL (Status, Name, Url) VALUES ('" + status + "', '" + name + "', '" + url + "');");
+        sqlDB.execSQL("INSERT INTO groupTBL (Status, Name, Url, PUrl) VALUES ('" + status + "', '" + name + "', '" + url + "', '" + purl + "');");
         sqlDB.close();
     }
 
@@ -122,9 +120,11 @@ public class GalleryFragment extends Fragment {
         public myDBHelper(Context context) {
             super(context, "groupDB", null, 1);
         }
+
+        //Id번호, 상태, 상품명, 상품Url, 특가사이트Url 저장
         @Override
         public void onCreate(SQLiteDatabase db) {
-            db.execSQL("CREATE TABLE groupTBL ( Id INTEGER PRIMARY KEY AUTOINCREMENT, Status TEXT, Name TEXT, Url TEXT);");
+            db.execSQL("CREATE TABLE groupTBL ( Id INTEGER PRIMARY KEY AUTOINCREMENT, Status TEXT, Name TEXT, Url TEXT, PUrl TEXT);");
         }
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

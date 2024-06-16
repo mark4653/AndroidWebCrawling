@@ -12,6 +12,7 @@ public class MyViewHolder extends RecyclerView.ViewHolder {
     TextView status, name;
     Button loadurl;
 
+    //itemview 설정
     public MyViewHolder(View itemView) {
         super(itemView);
 
