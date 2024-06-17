@@ -64,7 +64,8 @@ public class HomeFragment extends Fragment {
                 cursor = db.rawQuery("SELECT * FROM groupTBL;", null);
                 while (cursor.moveToNext()) {
                     CountDownLatch latch = new CountDownLatch(1); //Latch 선언
-                    checkDB(cursor.getInt(0), cursor.getString(4), latch); //각 DB의 소개페이지를 넘겨 상태를 재확인
+                    //각 DB의 소개페이지를 넘겨 상태를 재확인
+                    checkDB(cursor.getInt(0), cursor.getString(4), latch);
                     try {
                         latch.await(); //Latch를 사용해 스레드에서 작업이 전부 완료될 때까지 대기
                     } catch (InterruptedException e) {
@@ -99,9 +100,9 @@ public class HomeFragment extends Fragment {
         db = myHelper.getReadableDatabase();
         Cursor cursor;
         cursor = db.rawQuery("SELECT * FROM groupTBL;", null);
-
         while (cursor.moveToNext()) {
-            myDataset.add(new PaintTitle(cursor.getString(1), cursor.getString(2), cursor.getString(3)));
+            myDataset.add(new PaintTitle(cursor.getString(1), cursor.getString(2),
+                    cursor.getString(3), cursor.getString(5)));
         }
 
         cursor.close();
@@ -131,7 +132,7 @@ public class HomeFragment extends Fragment {
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
-                } finally {
+                } finally { //작업이 전부 끝나면 latch 감소
                     latch.countDown();
                 }
             }

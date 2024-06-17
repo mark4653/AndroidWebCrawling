@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class MyViewHolder extends RecyclerView.ViewHolder {
 
-    TextView status, name;
+    TextView status, name, price;
     Button loadurl;
 
     //itemview 설정
@@ -18,9 +18,8 @@ public class MyViewHolder extends RecyclerView.ViewHolder {
 
         status = (TextView) itemView.findViewById(R.id.status);
         name = (TextView) itemView.findViewById(R.id.name);
+        price = (TextView) itemView.findViewById(R.id.price);
         loadurl = (Button) itemView.findViewById(R.id.loadurl);
-
-
     }
 
 }

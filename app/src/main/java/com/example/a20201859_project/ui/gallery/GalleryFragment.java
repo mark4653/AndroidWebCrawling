@@ -6,6 +6,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -113,11 +114,16 @@ public class GalleryFragment extends Fragment {
                     String status = crawledDetail.text().split(" ", 2)[0];
                     String name = crawledDetail.text().split(" ", 2)[1];
 
+                    //특가 가격 로드
+                    Elements crawledPrice = doc.select("table.market-info-view-table span.text-orange");
+                    String price = crawledPrice.text();
+                    Log.d("Price", price);
+
                     //특가 사이트 url 가져오기
                     Element crawledUrl = doc.selectFirst("table.market-info-view-table");
                     String url = crawledUrl.select("tbody tr").select("td").get(0).text();
 
-                    SQLInsert(status, name, url, PageUrl); //DB에 삽입
+                    SQLInsert(status, name, url, PageUrl, price); //DB에 삽입
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -126,9 +132,10 @@ public class GalleryFragment extends Fragment {
     }
 
     //DB 삽입 함수
-    public void SQLInsert(String status, String name, String url, String purl) {
+    public void SQLInsert(String status, String name, String url, String purl, String price) {
         sqlDB = myHelper.getWritableDatabase();
-        sqlDB.execSQL("INSERT INTO groupTBL (Status, Name, Url, PUrl) VALUES ('" + status + "', '" + name + "', '" + url + "', '" + purl + "');");
+        sqlDB.execSQL("INSERT INTO groupTBL (Status, Name, Url, Purl, Price) VALUES ('" + status +
+                "', '" + name + "', '" + url + "', '" + purl + "', '" + price + "');");
         sqlDB.close();
     }
 
@@ -140,7 +147,7 @@ public class GalleryFragment extends Fragment {
         //Id번호, 상태, 상품명, 상품Url, 특가사이트Url 저장
         @Override
         public void onCreate(SQLiteDatabase db) {
-            db.execSQL("CREATE TABLE groupTBL ( Id INTEGER PRIMARY KEY AUTOINCREMENT, Status TEXT, Name TEXT, Url TEXT, PUrl TEXT);");
+            db.execSQL("CREATE TABLE groupTBL ( Id INTEGER PRIMARY KEY AUTOINCREMENT, Status TEXT, Name TEXT, Url TEXT, Purl TEXT, Price TEXT);");
         }
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

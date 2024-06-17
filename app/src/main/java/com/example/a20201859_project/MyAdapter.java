@@ -41,6 +41,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
         //상태, 상품명 표시
         holder.status.setText(mDataset.get(position).status);
         holder.name.setText(mDataset.get(position).name);
+        holder.price.setText(mDataset.get(position).price);
 
         //리스트의 버튼을 누를 시 상품 사이트로 직접 이동
         holder.loadurl.setOnClickListener(new View.OnClickListener() {
